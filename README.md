@@ -45,15 +45,13 @@ python -m venv venv
 Make sure you have Poppler and fastapi installed and added to your PATH (required for PDF processing):
 
 - **Poppler** Download from [Poppler for Windows](https://blog.alivate.com.au/poppler-windows/) and add the `bin` folder to your PATH.
-
+- **FFMPEG** Download from [FFmpeg](https://github.com/FFmpeg/FFmpeg) and add the `bin` folder to your PATH.
+- **MPV** Download from [MPV](https://mpv.io/installation/) and add the `bin` folder to your PATH.
 
 - For Fastapi, you can install it using pip:
   ```sh
 pip install fastapi
   ```
-
-- **FFMPEG** Download from [FFmpeg](https://github.com/FFmpeg/FFmpeg) and add the `bin` folder to your PATH.
-- **MPV** Download from [MPV](https://mpv.io/installation/) and add the `bin` folder to your PATH.
 
 
 Then install Python dependencies:
@@ -116,3 +114,6 @@ MIT License
 - Deepali Singh – Frontend Developer
 - Afreen Siddiqui – Backend Developer
 - Suryansh 😜
+=======
+
+>>>>>>> f1a0c5c1eae0401ddecda91495c60395824242d0
