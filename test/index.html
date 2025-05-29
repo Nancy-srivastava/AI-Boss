@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Demon</title>
+</head>
+
+<body>
+  <div class="sec1">
+
+    <div class="sec1main">
+      <div class="grad">
+        <h2>Welcome In <br /><span>> AI BOSS </span></h2>
+        <p>
+          Your personal AI-powered virtual interview assistant. Upload your
+          resume and start your mock interview journey.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="sec2">
+    <div class="sec2card">
+      <h2>Submit Your Resume Here</h2>
+      <input type="file" name="file" id="resumeInput" accept=".pdf,.doc,.docx" required />
+      <button class="btn-upload" id="uploadBtn">
+        <span id="uploadBtnText">UPLOAD</span>
+        <span id="uploadLoader" class="loader" style="display: none;"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Popup -->
+  <div id="popup" class="popup">
+    <div class="popup-content">
+      <img src="./images/robo.png" style="height: 10rem;" alt="">
+      <p id="popupText"></p>
+      <button id="closePopup">OK</button>
+    </div>
+  </div>
+
+  <style>
+    .popup {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(2px);
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    .popup-content {
+      background-color: #1e1e1e;
+      color: #f0f0f0;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+      margin: 15% auto;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .popup-content button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      background-color: #444;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .popup-content button:hover {
+      background-color: #666;
+    }
+
+    .loader {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 3px solid #fff;
+      border-top: 3px solid #444;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      vertical-align: middle;
+      margin-left: 8px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+
+  <script>
+    const uploadBtn = document.getElementById('uploadBtn');
+    const resumeInput = document.getElementById('resumeInput');
+    const continueBtn = document.getElementById('continueBtn');
+    const popup = document.getElementById('popup');
+    const popupText = document.getElementById('popupText');
+    const closePopup = document.getElementById('closePopup');
+    const uploadBtnText = document.getElementById('uploadBtnText');
+    const uploadLoader = document.getElementById('uploadLoader');
+
+    uploadBtn.addEventListener('click', async () => {
+      const file = resumeInput.files[0];
+      if (!file) {
+        showPopup('Please select a file before uploading.');
+        return;
+      }
+
+      // Show loader and change text
+      uploadBtn.disabled = true;
+      uploadBtnText.textContent = 'Uploading...';
+      uploadLoader.style.display = 'inline-block';
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const response = await fetch('http://localhost:5000/start-interview', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Assume backend returns { sessionId: "..." }
+          showPopupWithContinue('Resume uploaded successfully! Ready to start your interview?', data.session_id);
+        } else {
+          showPopup('Upload failed. Please try again.');
+        }
+      } catch (error) {
+        showPopup('An error occurred while uploading.');
+        console.error(error);
+      } finally {
+        // Hide loader and reset text
+        uploadBtn.disabled = false;
+        uploadBtnText.textContent = 'UPLOAD';
+        uploadLoader.style.display = 'none';
+      }
+    });
+
+    function showPopupWithContinue(message, sessionId) {
+      popupText.innerHTML = message;
+      popup.style.display = 'block';
+
+      // Add Continue button if not present
+      let continueBtn = document.getElementById('continueBtn');
+      if (!continueBtn) {
+        continueBtn = document.createElement('button');
+        continueBtn.id = 'continueBtn';
+        continueBtn.textContent = 'Start Interview';
+        popupText.parentNode.appendChild(continueBtn);
+      }
+      continueBtn.style.display = 'inline-block';
+
+      continueBtn.onclick = function () {
+        window.location.href = `aiboss/aiboss.html?sessionId=${(sessionId)}`;
+      };
+
+      // Hide continue button on close
+      closePopup.onclick = function () {
+        popup.style.display = 'none';
+        continueBtn.style.display = 'none';
+      };
+    }
+
+    closePopup.addEventListener('click', () => {
+      popup.style.display = 'none';
+    });
+
+    function showPopup(message) {
+      popupText.textContent = message;
+      popup.style.display = 'block';
+    }
+  </script>
+
+  <div class="sec3">
+    <h2>About <span>AI BOSS</span></h2>
+    <div class="sec3main">
+      <div class="s3m-con1">
+        <p>
+          This platform uses AI to help you prepare for interviews by
+          analyzing your resume, identifying key skills and keywords, and
+          generating personalized mock interview questions. It creates a
+          realistic interview experience to boost your confidence and
+          readiness for real job opportunities.
+        </p>
+      </div>
+      <div class="s3m-con2">
+        <div class="s3mimg">
+          <img src="./images/img2.webp" alt="" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec4">
+    <h2>About <span>My Team</span></h2>
+    <div class="sec4main">
+      <div class="card">
+        <div class="cdimg"><img src="./images/tarun.jpeg" alt="" /></div>
+        <h3>Tarun Shukla</h3>
+        <p>UI & UX Designer</p>
+      </div>
+      <div class="card">
+        <div class="cdimg"><img class="imgdef" src="./images/deepali.jpg" alt="" /></div>
+        <h3>Deepali Singh</h3>
+        <p>Frontend Developer</p>
+      </div>
+      <div class="card">
+        <div class="cdimg"><img class="imgdef" src="./images/nancy.jpeg" alt="" /></div>
+        <h3>Nancy Srivastava</h3>
+        <p>Backend Developer</p>
+      </div>
+      <div class="card">
+        <div class="cdimg"><img class="imgdef" src="./images/afreen.jpeg" alt="" /></div>
+        <h3>Afreen Siddiqui</h3>
+        <p>Backend Developer</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>Copyright by AI BOSS Ⓒ 2025</footer>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

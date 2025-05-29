@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <title>AI BOSS</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+      background-color: black;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sec1 {
+      display: flex;
+      width: 90%;
+      max-width: 1200px;
+      height: 100dvh;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
+    }
+
+    .right {
+      flex: 2;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      color: white;
+    }
+
+    .right h2 {
+      font-size: 2.5em;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .right h2 span {
+      color: #ff6b6b;
+      font-weight: bold;
+    }
+
+    /* Custom Scrollbar Styles */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(45deg, #ff5252, #26a69a);
+    }
+
+    /* Chat Box Styles */
+    #chatBox {
+      flex: 1;
+      overflow-y: auto;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      max-height: calc(80vh - 200px);
+      min-height: 300px;
+    }
+
+    .message {
+      margin: 10px 0;
+      padding: 12px 15px;
+      border-radius: 15px;
+      max-width: 85%;
+      word-wrap: break-word;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .user-message {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .ai-message {
+      background: rgba(255, 255, 255, 0.1);
+      margin-right: auto;
+    }
+
+    .error-message {
+      background: linear-gradient(45deg, #ff6b6b, #ff4757);
+      margin: 0 auto;
+      text-align: center;
+      max-width: 100%;
+    }
+
+    .message strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Input Container */
+    .input-container {
+      display: flex;
+      align-items: flex-end;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 25px;
+      padding: 10px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .input-icons {
+      display: flex;
+      gap: 15px;
+      margin-right: 15px;
+      align-items: center;
+    }
+
+    .input-icons i {
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      font-size: 1.2em;
+      transition: color 0.3s ease;
+    }
+
+    .input-icons i:hover {
+      color: #ff6b6b;
+    }
+
+    #userInput {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: white;
+      font-size: 16px;
+      resize: none;
+      min-height: 20px;
+      max-height: 80px;
+      line-height: 1.4;
+      padding: 5px 0;
+      overflow-y: auto;
+    }
+
+    #userInput::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    #sendBtn {
+      color: #4ecdc4;
+      cursor: pointer;
+      font-size: 1.3em;
+      margin-left: 15px;
+      transition: all 0.3s ease;
+      padding: 5px;
+    }
+
+    #sendBtn:hover {
+      color: #ff6b6b;
+      transform: scale(1.1);
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .loading i {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .progress-bar {
+      background: rgba(255, 255, 255, 0.1);
+      height: 4px;
+      border-radius: 2px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+      height: 100%;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .redirect-message {
+      text-align: center;
+      padding: 20px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.1em;
+    }
+
+    .redirect-countdown {
+      font-weight: bold;
+      color: #ff6b6b;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="sec1">
+    <div class="left"></div>
+    <div class="right">
+      <h2>Welcome In <br /><span>> AI BOSS </span></h2>
+      
+      <!-- Progress Bar -->
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <!-- Chat Container -->
+      <div id="chatBox">
+        <div class="loading" id="loading">
+          <i class="fa-solid fa-spinner"></i> Loading interview...
+        </div>
+      </div>
+
+      <!-- Input area -->
+      <div class="input-container">
+        <div class="input-icons">
+          <i class="fa-solid fa-microphone"></i>
+        </div>
+        <textarea id="userInput" placeholder="Type your answer..." rows="1"></textarea>
+        <i id="sendBtn" class="fa-regular fa-paper-plane"></i>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById('chatBox');
+    const input = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const loading = document.getElementById('loading');
+    const progressFill = document.getElementById('progressFill');
+
+    let sessionId = null;
+    let isInterviewCompleted = false;
+
+    // Auto-resize textarea
+    input.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 80) + 'px';
+    });
+
+    function getSessionId() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('sessionId');
+    }
+
+    function appendMessage(sender, text, isUser = false, isError = false) {
+      const msg = document.createElement('div');
+      let messageClass = 'message ';
+      if (isError) {
+        messageClass += 'error-message';
+      } else {
+        messageClass += isUser ? 'user-message' : 'ai-message';
+      }
+      msg.className = messageClass;
+      msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function updateProgress(progress) {
+      if (progress && typeof progress === 'object') {
+        const percentage = (progress.current / progress.total) * 100;
+        progressFill.style.width = percentage + '%';
+      }
+    }
+
+    function showLoading(show = true) {
+      loading.style.display = show ? 'block' : 'none';
+    }
+
+    function redirectToPreviousPage(message = 'Session expired', countdown = 5) {
+      // Clear the chat box
+      chatBox.innerHTML = '';
+      
+      // Show redirect message
+      const redirectDiv = document.createElement('div');
+      redirectDiv.className = 'redirect-message';
+      redirectDiv.innerHTML = `
+        <i class="fa-solid fa-exclamation-triangle" style="font-size: 3em; color: #ff6b6b; margin-bottom: 20px;"></i>
+        <h3>${message}</h3>
+        <p>You will be redirected to the previous page in <span class="redirect-countdown" id="countdown">${countdown}</span> seconds...</p>
+        <p style="margin-top: 15px; font-size: 0.9em; opacity: 0.7;">
+          <i class="fa-solid fa-info-circle"></i> If you are not redirected automatically, 
+          <a href="javascript:history.back()" style="color: #4ecdc4; text-decoration: underline;">click here</a>
+        </p>
+      `;
+      chatBox.appendChild(redirectDiv);
+
+      // Disable input
+      input.disabled = true;
+      input.placeholder = 'Session expired';
+
+      // Start countdown
+      const countdownElement = document.getElementById('countdown');
+      let timeLeft = countdown;
+      
+      const countdownTimer = setInterval(() => {
+        timeLeft--;
+        if (countdownElement) {
+          countdownElement.textContent = timeLeft;
+        }
+        
+        if (timeLeft <= 0) {
+          clearInterval(countdownTimer);
+          // Try to go back to previous page, fallback to home if no history
+          if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            // Fallback: redirect to a default page or reload
+            window.location.href = '/'; // Change this to your desired fallback URL
+          }
+        }
+      }, 1000);
+    }
+
+    function handleSessionExpired(errorData) {
+      let message = 'Session expired or invalid';
+      
+      // Check if the server provided a specific error message
+      if (errorData && errorData.message) {
+        message = errorData.message;
+      } else if (errorData && errorData.error) {
+        message = errorData.error;
+      }
+      
+      redirectToPreviousPage(message);
+    }
+
+    async function loadInitialQuestion() {
+      sessionId = getSessionId();
+      
+      if (!sessionId) {
+        appendMessage('System', 'Error: Session ID not found in URL. Please make sure you have a valid session link.', false, true);
+        redirectToPreviousPage('No session ID found', 3);
+        return;
+      }
+
+      showLoading(true);
+
+      try {
+        const response = await fetch(`http://localhost:5000/get-question/${sessionId}`);
+        
+        if (!response.ok) {
+          // Handle HTTP errors
+          if (response.status === 404) {
+            handleSessionExpired({ message: 'Session not found or expired' });
+            return;
+          } else if (response.status === 410) {
+            handleSessionExpired({ message: 'Session has expired' });
+            return;
+          }
+        }
+
+        const data = await response.json();
+        showLoading(false);
+
+        // Check if the response indicates an expired or invalid session
+        if (data.error && (data.error.includes('expired') || data.error.includes('invalid') || data.error.includes('not found'))) {
+          handleSessionExpired(data);
+          return;
+        }
+
+        if (data.is_completed) {
+          appendMessage('AI BOSS', data.message);
+          isInterviewCompleted = true;
+          input.disabled = true;
+          input.placeholder = 'Interview completed';
+        } else if (data.question) {
+          appendMessage('AI BOSS', data.question);
+          if (data.progress) {
+            updateProgress(data.progress);
+          }
+        } else {
+          // If no question is provided, it might be an expired session
+          handleSessionExpired({ message: 'Unable to load interview questions' });
+        }
+      } catch (error) {
+        showLoading(false);
+        console.error('Error loading initial question:', error);
+        
+        // Check if it's a network error or server error that might indicate session expiry
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+          appendMessage('System', 'Unable to connect to the server. Please check your connection.', false, true);
+        } else {
+          handleSessionExpired({ message: 'Failed to load interview session' });
+        }
+      }
+    }
+
+    async function sendMessage() {
+      if (isInterviewCompleted) return;
+      
+      const message = input.value.trim();
+      if (!message) return;
+
+      appendMessage('You', message, true);
+      input.value = '';
+      input.style.height = 'auto';
+
+      showLoading(true);
+
+      try {
+        const response = await fetch(`http://localhost:5000/submit-answer/${sessionId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ answer: message })
+        });
+
+        if (!response.ok) {
+          // Handle HTTP errors
+          if (response.status === 404) {
+            handleSessionExpired({ message: 'Session not found or expired' });
+            return;
+          } else if (response.status === 410) {
+            handleSessionExpired({ message: 'Session has expired' });
+            return;
+          }
+        }
+
+        const data = await response.json();
+        showLoading(false);
+
+        // Check if the response indicates an expired or invalid session
+        if (data.error && (data.error.includes('expired') || data.error.includes('invalid') || data.error.includes('not found'))) {
+          handleSessionExpired(data);
+          return;
+        }
+
+        if (data.is_completed) {
+          appendMessage('AI BOSS', `🎉 Interview Completed!<br/><br/><strong>Final Grade:</strong> ${data.grade}<br/><br/><strong>Feedback:</strong><br/>${data.feedback}`);
+          isInterviewCompleted = true;
+          input.disabled = true;
+          input.placeholder = 'Interview completed';
+          progressFill.style.width = '100%';
+        } else if (data.next_question) {
+          appendMessage('AI BOSS', data.next_question);
+          if (data.progress) {
+            updateProgress(data.progress);
+          }
+        } else {
+          // If no next question is provided, it might be an expired session
+          handleSessionExpired({ message: 'Session interrupted or expired' });
+        }
+      } catch (error) {
+        showLoading(false);
+        console.error('Error submitting answer:', error);
+        
+        // Check if it's a network error that might indicate session expiry
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+          appendMessage('System', 'Unable to connect to the server. Please try again.', false, true);
+        } else {
+          handleSessionExpired({ message: 'Connection lost or session expired' });
+        }
+      }
+    }
+
+    // Event listeners
+    sendBtn.addEventListener('click', sendMessage);
+
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // Load initial question when page loads
+    window.addEventListener('load', loadInitialQuestion);
+  </script>
+</body>
+
+</html>
