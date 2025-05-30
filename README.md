@@ -113,7 +113,7 @@ MIT License
 - Nancy Srivastava – Backend Developer
 - Deepali Singh – Frontend Developer
 - Afreen Siddiqui – Backend Developer
-- Suryansh 😜
+- 
 =======
 
 >>>>>>> f1a0c5c1eae0401ddecda91495c60395824242d0
